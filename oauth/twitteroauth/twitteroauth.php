@@ -1,5 +1,5 @@
 <?php
-
+set_time_limit(0);
 /*
  * Abraham Williams (abraham@abrah.am) http://abrah.am
  *
