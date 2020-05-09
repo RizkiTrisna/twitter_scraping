@@ -1,7 +1,10 @@
 <?php
 require_once 'db_config.php';
 
-
+$a = 10;
+if($a = isset($a)){
+    echo $a;
+}
 // $data = file_get_contents('ehe2.json');
 // $data_decode = json_decode($data, true);
 
