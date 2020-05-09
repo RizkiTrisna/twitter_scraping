@@ -1,4 +1,5 @@
 <?php
+set_time_limit(0);
 session_start();
 require_once("oauth/twitteroauth/twitteroauth.php"); //Path to twitteroauth library
 require_once 'db_config.php';
@@ -56,55 +57,46 @@ function getData($words)
         $hasil_encode = json_encode($tweets);
         $hasil_decode = json_decode(json_encode($tweets), true);
 
-        if ($hasil_encode != null) {
-            $status_1 = inputCrawlToDatabase($hasil_encode, $id_kota);
-            if ($status_1) {
+        if (isset($hasil_decode["statuses"]) && isset($hasil_decode["search_metadata"]["next_results"]) ) {
+            if (inputCrawlToDatabase($hasil_encode, $id_kota)) {
                 $next_url = $hasil_decode["search_metadata"]["next_results"];
                 $success_count += 1;
-                echo "Next URL 1 : " . $next_url;
+
                 $year = substr($hasil_decode["statuses"][0]['created_at'], -5);
                 $month = substr($hasil_decode["statuses"][0]['created_at'], 4, 3);
                 $date = substr($hasil_decode["statuses"][0]['created_at'], 8, 2);
 
                 $current_date = date("Y-M-d", strtotime($month . " " . $date . " " . $year));
                 $status = true;
-                $a = 0;
-                while ($end_date != $current_date && $status) {
-                    ++$a;
+
+                while (($end_date != $current_date) && $status) {
 
                     $tweets = $connection->get("https://api.twitter.com/1.1/search/tweets.json" . $next_url);
                     $hasil_encode = json_encode($tweets);
                     $hasil_decode = json_decode(json_encode($tweets), true);
 
                     // Salah di next url nya, coba cek++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                    if ($hasil_encode != null) {
-                        $status = inputCrawlToDatabase($hasil_encode, $id_kota);
-                        if ($status) {
+                    if (isset($hasil_decode["statuses"]) && isset($hasil_decode["search_metadata"]["next_results"]) && ($status = inputCrawlToDatabase($hasil_encode, $id_kota))) {
+                        
+                        try {
                             $next_url = $hasil_decode["search_metadata"]["next_results"];
                             $success_count += 1;
                             $year = substr($hasil_decode["statuses"][0]['created_at'], -5);
                             $month = substr($hasil_decode["statuses"][0]['created_at'], 4, 3);
                             $date = substr($hasil_decode["statuses"][0]['created_at'], 8, 2);
-                            echo "Next URL : " . $next_url;
 
                             $current_date = date("Y-M-d", strtotime($month . " " . $date . " " . $year));
-
-                            echo "Success count: " . $success_count++;
-                            echo "\n";
-                            echo "Last input date : $current_date ";
-                            echo "End input date: $end_date";
-                            echo "\n";
+                        } catch (Exception $e) {
+                            $e->getMessage();
+                            die();
                         }
                     } else {
-                        echo "Failed count: " . $failed_count++;
-                        echo "\n";
+                        echo "hasil_decode['statuses'] di if dalam while belum di set";
                     }
                 }
-                echo "Last success count: " . $success_count++;
-                echo "\n";
             }
         } else {
-            echo "Last failed count: " . $failed_count++;
+            echo "hasil_decode['statuses'] di if luar while belum di set";
         }
 
         // Reserved
@@ -136,6 +128,7 @@ function getData($words)
         //         }
         //     }
         // }
+            echo "Last URL : ".  $next_url ." On id_kota : ".$id_kota;
     }
     return $failed_count;
 }
