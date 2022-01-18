@@ -7,10 +7,10 @@ require_once 'inputJsonToDatabase.php';
 
 $twitteruser = "rizkitrisna_ra";
 $notweets = 30;
-$consumerkey = "e797FjURPZkMH3AcduhIhZ5Ob";
-$consumersecret = "AlSCAPPIWm4qev8wbRBQVuE4ZcadVjaD1HWMjx22Jlfnnz85EV";
-$accesstoken = "918947738-pmg8XWxMZkUXLbVKAlXsRfCdZGuXiHbL8ViKxU9m";
-$accesstokensecret = "IByzM4qhewqLvfUWRP2HpAENxiLQTlHrfF2apXS7rZ54I";
+$consumerkey = "enter your consumer key";
+$consumersecret = "Enter your consumer secret";
+$accesstoken = "Enter your access token";
+$accesstokensecret = "Enter your access token secret";
 
 function getConnectionWithAccessToken($cons_key, $cons_secret, $oauth_token, $oauth_token_secret)
 {
